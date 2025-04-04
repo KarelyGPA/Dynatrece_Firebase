@@ -406,36 +406,51 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
     except Exception as e:
         print(f"⚠ Error al enviar el mensaje: {e}")
  
+    #---------------------------------
     #SI OCP3 o OCP4 es mayor a 200
+    #-------------------------------
+   
+    metrica_OCP3=float(valores[2])
+    metrica_OCP4=float(valores[0])
  
-    counter=0
-    for valor in valores:
-       
-        counter=counter+1
-        if counter == 1:
-            img_path = r"C:\Users\l.a.villanueva\Pictures\Capturas\ocp4_grafica.png"
-            Metrica_Alerta = "OCP4"
-            valorr= valores[0]
-        elif counter == 2:
-            img_path = r"C:\Users\l.a.villanueva\Pictures\Capturas\ocp3_grafica.png"
-            Metrica_Alerta = "OCP3"
-            valorr= valores[2]
- 
-        try:
-            valor_f = float(valorr)
-            valor_i = int(valor_f)
-            print("pasó por valor i: ", valor_i)
-        except ValueError:
-            print(f" Error al convertir '{valorr}' a número")
-            continue
- 
+    if metrica_OCP3 > 55 and metrica_OCP4 > 55:
         #Mensaje de alerta
-        message_alert = (
-            "*ALERTA, metrica* " + Metrica_Alerta + " arriba de 200: " + "*\n"
-            + Metrica_Alerta + " =  *" + str(valor_i) + "*\n"
-        )
+        message_alert= [
+        f"*ALERTA*, métricas OCP3 Y OCP4 arriba de 200:",
+        f"*OCP3* = *{str(valores[2])}*",
+        f"*OCP4* = *{str(valores[0])}*"
+        ]
  
-    if valor_i >= 40 :
+    else:
+        counter=0
+        for valor in valores:
+           
+            counter=counter+1
+            if counter == 1 and metrica_OCP4 > 55:
+                img_path = r"C:\Users\l.a.villanueva\Pictures\Capturas\ocp4_grafica.png"
+                Metrica_Alerta = "OCP4"
+                valorr= valores[0]
+            elif counter == 3 and metrica_OCP3 > 55:
+                img_path = r"C:\Users\l.a.villanueva\Pictures\Capturas\ocp3_grafica.png"
+                Metrica_Alerta = "OCP3"
+                valorr= valores[2]
+            else: continue
+ 
+            try:
+                valor_f = float(valorr)
+                valor_i = int(valor_f)
+                print("pasó por valor i: ", valor_i)
+            except ValueError:
+                print(f" Error al convertir '{valorr}' a número")
+                continue
+ 
+            #Mensaje de alerta
+        message_alert= [
+        f"*ALERTA*, métrica {str(Metrica_Alerta)} arriba de 200:",
+        f"*{str(Metrica_Alerta)}* = *{str(valor_i)}*"
+    ]
+ 
+    if metrica_OCP3 > 55 or metrica_OCP4 > 55:
         try:
             attach_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[@data-tab='10']"))
@@ -592,7 +607,7 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
     metrica_OCP3=float(valores[2])
     metrica_OCP4=float(valores[0])
  
-    if metrica_OCP3 > 40 and metrica_OCP4 > 40:
+    if metrica_OCP3 > 55 and metrica_OCP4 > 55:
         #Mensaje de alerta
             message_alert_google= [
         f"*ALERTA*, métricas OCP3 Y OCP4 arriba de 200:",
@@ -602,17 +617,18 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
  
     else:
         counter=0
-        for valor in valores:
+        for _ in valores:
            
             counter=counter+1
-            if counter == 1:
+            if counter == 1 and metrica_OCP4 > 55:
                 img_path = r"C:\Users\l.a.villanueva\Pictures\Capturas\ocp4_grafica.png"
                 Metrica_Alerta = "OCP4"
                 valorr= valores[0]
-            elif counter == 2:
+            elif counter == 3 and metrica_OCP3 > 55:
                 img_path = r"C:\Users\l.a.villanueva\Pictures\Capturas\ocp3_grafica.png"
                 Metrica_Alerta = "OCP3"
                 valorr= valores[2]
+            else: continue
  
             try:
                 valor_f = float(valorr)
@@ -631,7 +647,7 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
         #---------------------------
         #   Enviar mensaje de alerta por Google
  
-    if  metrica_OCP3 > 40 or metrica_OCP4 > 40:
+    if  metrica_OCP3 > 55 or metrica_OCP4 > 55:
  
         try:
             # Hacer clic en el botón de adjuntar archivo
