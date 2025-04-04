@@ -1,4 +1,5 @@
 from xml.dom.xmlbuilder import Options
+import schedule
 from selenium import webdriver
 from selenium.webdriver.common import keys
 from selenium.webdriver.common.by import By
@@ -415,11 +416,9 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
  
     if metrica_OCP3 > 55 and metrica_OCP4 > 55:
         #Mensaje de alerta
-        message_alert= [
-        f"*ALERTA*, métricas OCP3 Y OCP4 arriba de 200:",
-        f"*OCP3* = *{str(valores[2])}*",
-        f"*OCP4* = *{str(valores[0])}*"
-        ]
+        message_alert = (
+        "*ALERTA*, métricas OCP3 y OCP4 arriba de 200:" + "*\n" + "*OCP3* = " + "*" + str(valores[2]) + "*\n" + "*OCP4* = *" + str(valores[0]) + "*"
+        )
  
     else:
         counter=0
@@ -445,10 +444,9 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
                 continue
  
             #Mensaje de alerta
-        message_alert= [
-        f"*ALERTA*, métrica {str(Metrica_Alerta)} arriba de 200:",
-        f"*{str(Metrica_Alerta)}* = *{str(valor_i)}*"
-    ]
+        message_alert = (
+        "*ALERTA*, métricas OCP3 y OCP4 arriba de 200:" + "*\n" + "*OCP3* = " + "*" + str(valores[2]) + "*\n" + "*OCP4* = *" + str(valores[0]) + "*"
+        )
  
     if metrica_OCP3 > 55 or metrica_OCP4 > 55:
         try:
@@ -472,25 +470,45 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
         except Exception as e:
                 print(f"⚠ Error al adjuntar imagen {MM_path}")
         # Enviar el mensaje usando 'Shift + Enter' para saltos de línea
+        time.sleep(2)
         try:
             text_box = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//div[@role='textbox' and @aria-label='Type a message']"))
             )
             text_box.click()
-            time.sleep(1)
+            time.sleep(2)
    
             # Para forzar el salto de línea, reemplazamos '\n' con Keys.SHIFT + Keys.ENTER
             for line in message_alert.split("\n"):
                 text_box.send_keys(line)  # Enviar una línea
                 text_box.send_keys(Keys.SHIFT + Keys.ENTER)  # Salto de línea
             text_box.send_keys(Keys.RETURN)  # Finalmente, enviar el mensaje
-            time.sleep(1)
+            time.sleep(2)
    
             send_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
             )
             send_button.click()
             time.sleep(2)
+        # try:
+        #     text_box = WebDriverWait(driver, 10).until(
+        #         EC.presence_of_element_located((By.XPATH, "//div[@role='textbox' and @aria-label='Type a message']"))
+        #     )
+        #     text_box.click()
+        #     time.sleep(1)
+   
+        #     # Para forzar el salto de línea, reemplazamos '\n' con Keys.SHIFT + Keys.ENTER
+        #     for line in message_alert.split("\n"):
+        #         text_box.send_keys(line)  # Enviar una línea
+        #         text_box.send_keys(Keys.SHIFT + Keys.ENTER)  # Salto de línea
+        #     text_box.send_keys(Keys.RETURN)  # Finalmente, enviar el mensaje
+        #     time.sleep(1)
+   
+        #     send_button = WebDriverWait(driver, 10).until(
+        #         EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
+        #     )
+        #     send_button.click()
+        #     time.sleep(2)
            
         except Exception as e: print("fallo el try de mandar el mensaje")
     else:
@@ -698,85 +716,79 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
         time.sleep(2)
  
  
- 
 # -------------------------------
 # EJECUCIÓN PRINCIPAL
 # -------------------------------
 def main():
- 
     print("\n🚀 Iniciando proceso de captura y envío...")  
-    # 📌 Llamar a la función para activar Chrome
     activate_chrome()
- 
-     # 4️⃣ Obtener métricas de Dynatrace
+
     try:
-       valores = metricas(driver)
-       
+        valores = metricas(driver)
     except Exception as e:
         print(f"⚠️ Error al extraer métricas de Dynatrace: {e}")
         print("\n✅ Proceso finalizado con éxito.")
-   
-    # 📂 Asegurar que la carpeta de capturas existe
+    
     if not os.path.exists(SAVE_FOLDER):
         os.makedirs(SAVE_FOLDER)
         print(f"📂 Carpeta creada: {SAVE_FOLDER}")
- 
-    captured_images = []  # Lista para almacenar rutas de imágenes capturadas
-    extracted_texts = {}  # Diccionario para almacenar texto extraído de cada imagen
-    extracted_texts_firebase = {}  # Diccionario para almacenar texto extraído de cada imagen
- 
-    # 1️⃣ Capturar imágenes de Dynatrace
- 
+
+    captured_images = []
+    extracted_texts = {}
+    extracted_texts_firebase = {}
+
     for (x, y, width, height, file_name) in AREAS_TO_CAPTURE:
         try:
             image_path = capture_screen_area(x, y, width, height, file_name)
             captured_images.append(image_path)
         except Exception as e:
             print(f"❌ Error al capturar {file_name}: {e}")  
- 
-   
+
     metricasMM(MM_path)
- 
-    # Abrir Firebase y extraer metricas 30m y 5m
+
     metricasfb = metricasF(driver)
-    # 🔄 Capturar imágenes en Firebase y extraer texto 1m con OCR
-    # 🚀 Mueve el cursor a la posición para activar la información en el dashboard
+
     pyautogui.moveTo(807, 843, duration=0.5)
-   
-    extracted_texts_firebase = {}  # Diccionario para almacenar texto extraído
-   
+
     for (x, y, width, height, file_name) in AREAS_TO_CAPTURE_Firebase:
         try:
             img_path = capture_screen_area(x, y, width, height, file_name)
             captured_images.append(img_path)
-   
-            # Extraer texto usando OCR en cada imagen
             if "metrica" in file_name:
                 text = extract_text_from_image(img_path)
                 extracted_texts_firebase[file_name] = text
         except Exception as e:
             print(f"❌ Error al capturar {file_name}: {e}")
-   
+
     join_img(img_path)
- 
-    # Construcción del mensaje con Shift+Enter (saltos de línea correctos)
-   
+
     message = (
-    "Usuarios en el último minuto *" + str(text) + "*\n"
-    "Usuarios en los últimos 5 minutos *" + str(metricasfb[0]) + "*\n"
-    "Usuarios en los últimos 30 minutos *" + str(metricasfb[1]) + "*\n"
-    "Apicast bex promedio 3- *" + str(valores[0]) + "* 4- *" + str(valores[2]) + "*"
-)
-   
-    # 3️⃣ Enviar capturas a WhatsApp
+        "Usuarios en el último minuto *" + str(text) + "*\n"
+        "Usuarios en los últimos 5 minutos *" + str(metricasfb[0]) + "*\n"
+        "Usuarios en los últimos 30 minutos *" + str(metricasfb[1]) + "*\n"
+        "Apicast bex promedio 3- *" + str(valores[0]) + "* 4- *" + str(valores[2]) + "*"
+    )
+
     send_to_whatsapp(img_path, message , GROUP_NAME, valores, metricasfb, text)
-   
-    image_paths = [SAVE_FOLDER]  # LISTA CORRECTA :)
-    # 3. Send to Google Chat
+
+    image_paths = [SAVE_FOLDER]
     destinatario = "SRE"
     send_message_to_google_chat(driver, destinatario, message, img_path, valores, metricasfb, text)
+
+# -------------------------------
+# FUNCIÓN PARA PROGRAMAR LA EJECUCIÓN
+# -------------------------------
+def programar_ejecucion():
+    # Configura el cronograma para ejecutar el main cada 2 minutos
+    schedule.every(2).minutes.do(main)  # Ejecuta cada 2 minutos
+
+    # Mantener el script en ejecución
+    while True:
+        schedule.run_pending()
+        time.sleep(1)  # Espera 1 segundo para reducir el uso de recursos
+
 # -------------------------------
 # EJECUTAR EL SCRIPT
 # -------------------------------
 if __name__ == "__main__":
-    main()
+    programar_ejecucion()
