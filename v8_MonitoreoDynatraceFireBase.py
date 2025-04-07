@@ -19,6 +19,8 @@ from PIL import Image
 import cv2
 import pygetwindow as gw
 from pywinauto import Application
+from datetime import datetime,timedelta
+import calendar
  
 #from twilio.rest import Client
 # -------------------------------
@@ -778,14 +780,59 @@ def main():
 # -------------------------------
 # FUNCIÓN PARA PROGRAMAR LA EJECUCIÓN
 # -------------------------------
-def programar_ejecucion():
-    # Configura el cronograma para ejecutar el main cada 2 minutos
-    schedule.every(2).minutes.do(main)  # Ejecuta cada 2 minutos
+def es_dia_excepcion():
+    hoy = datetime.today()
+    dia = hoy.day
+    mes = hoy.month
+    anio = hoy.year
+    dia_semana = hoy.weekday()  # 0 = lunes, 6 = domingo
 
-    # Mantener el script en ejecución
+    # Verificar si el día 15 cae en lunes o martes
+    dia_15 = datetime(anio, mes, 15)
+    es_15_lunes_martes = dia_15.weekday() in [0, 1]  # lunes o martes
+
+    # Verificar si el último día del mes cae en lunes o martes
+    ultimo_dia_num = calendar.monthrange(anio, mes)[1]
+    dia_ultimo = datetime(anio, mes, ultimo_dia_num)
+    es_ultimo_lunes_martes = dia_ultimo.weekday() in [0, 1]
+
+    # Determinar penúltimo día
+    dia_penultimo = datetime(anio, mes, ultimo_dia_num - 1)
+
+    # Determinar si hoy es 14, 15 o 16
+    dias_cercanos_al_15 = dia in [14, 15, 16]
+    # Determinar si hoy es penúltimo, último o primero
+    es_ultimo_o_penultimo = hoy.day in [ultimo_dia_num, ultimo_dia_num - 1]
+    es_primero = hoy.day == 1
+
+    excepcion_por_15 = es_15_lunes_martes and dias_cercanos_al_15
+    excepcion_por_ultimo = es_ultimo_lunes_martes and (es_ultimo_o_penultimo or es_primero)
+
+    return excepcion_por_15 or excepcion_por_ultimo
+
+def programar_ejecucion():
+    schedule.clear()
+
+    if es_dia_excepcion():
+        print("Día de excepción: ejecutando cada 30 minutos.")
+        schedule.every(30).minutes.do(main)
+    else:
+        dia_semana = datetime.today().weekday()
+        if dia_semana <= 3:  # lunes a jueves
+            print("Día normal entre semana: ejecutando cada 1 hora.")
+            schedule.every().hour.do(main)
+        else:  # viernes a domingo
+            print("Fin de semana: ejecutando cada 30 minutos.")
+            schedule.every(30).minutes.do(main)
+
     while True:
         schedule.run_pending()
-        time.sleep(1)  # Espera 1 segundo para reducir el uso de recursos
+        time.sleep(60)  # Revisa cada minuto por eficiencia
+        # Revalidar el día para adaptarse a cambios de día sin reiniciar el script
+        if datetime.now().minute == 0:  # Solo a la hora exacta reprograma
+            programar_ejecucion()
+            break  # Salir del bucle actual para reiniciar la programación
+
 
 # -------------------------------
 # EJECUTAR EL SCRIPT
