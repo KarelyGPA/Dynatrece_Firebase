@@ -810,28 +810,67 @@ def es_dia_excepcion():
 
     return excepcion_por_15 or excepcion_por_ultimo
 
+
+import pyautogui
+import random
+
 def programar_ejecucion():
-    schedule.clear()
-    
-    if es_dia_excepcion():
-        print("Día de excepción: ejecutando cada 30 minutos.")
-        schedule.every(30).minutes.do(main)
-    else:
-        dia_semana = datetime.today().weekday()
-        if dia_semana <= 3:  # lunes a jueves
-            print("Día normal entre semana: ejecutando cada 1 hora.")
-            schedule.every().hour.do(main)
-        else:  # viernes a domingo
-            print("Fin de semana: ejecutando cada 30 minutos.")
-            schedule.every(30).minutes.do(main)
+    ultima_configuracion = None
+    screen_width, screen_height = pyautogui.size()
 
     while True:
+        # Verifica si debe reconfigurar
+        nueva_config = "excepcion" if es_dia_excepcion() else (
+            "hora" if datetime.today().weekday() <= 3 else "30min"
+        )
+
+        if nueva_config != ultima_configuracion:
+            schedule.clear()
+            if nueva_config == "excepcion":
+                print("🟡 Día de excepción: ejecutando cada 30 minutos.")
+                schedule.every(30).minutes.do(main)
+            elif nueva_config == "hora":
+                print("🔵 Día normal entre semana: ejecutando cada 1 hora.")
+                schedule.every().hour.do(main)
+            else:
+                print("🟢 Fin de semana: ejecutando cada 30 minutos.")
+                schedule.every(30).minutes.do(main)
+
+            # Ejecutar inmediatamente
+            main()
+            ultima_configuracion = nueva_config
+
+        # 🖱️ Mover cursor a una posición aleatoria cada minuto
+        rand_x = random.randint(0, screen_width - 1)
+        rand_y = random.randint(0, screen_height - 1)
+        pyautogui.moveTo(rand_x, rand_y, duration=0.5)
+
         schedule.run_pending()
-        time.sleep(60)  # Revisa cada minuto por eficiencia
-        # Revalidar el día para adaptarse a cambios de día sin reiniciar el script
-        if datetime.now().minute == 0:  # Solo a la hora exacta reprograma
-            programar_ejecucion()
-            break  # Salir del bucle actual para reiniciar la programación
+        time.sleep(60)
+
+
+# def programar_ejecucion():
+#     schedule.clear()
+
+#     if es_dia_excepcion():
+#         print("Día de excepción: ejecutando cada 30 minutos.")
+#         schedule.every(30).minutes.do(main)
+#     else:
+#         dia_semana = datetime.today().weekday()
+#         if dia_semana <= 3:  # lunes a jueves
+#             print("Día normal entre semana: ejecutando cada 1 hora.")
+#             schedule.every().hour.do(main)
+#         else:  # viernes a domingo
+#             print("Fin de semana: ejecutando cada 30 minutos.")
+#             schedule.every(30).minutes.do(main)
+
+#     while True:
+#         schedule.run_pending()
+#         time.sleep(60)  # Revisa cada minuto por eficiencia
+#         # Revalidar el día para adaptarse a cambios de día sin reiniciar el script
+#         if datetime.now().minute == 0:  # Solo a la hora exacta reprograma
+#             programar_ejecucion()
+#             break  # Salir del bucle actual para reiniciar la programación
 
 
 # -------------------------------
