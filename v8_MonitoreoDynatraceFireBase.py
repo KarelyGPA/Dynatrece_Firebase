@@ -812,7 +812,7 @@ def es_dia_excepcion():
 
 def programar_ejecucion():
     schedule.clear()
-
+    
     if es_dia_excepcion():
         print("Día de excepción: ejecutando cada 30 minutos.")
         schedule.every(30).minutes.do(main)
