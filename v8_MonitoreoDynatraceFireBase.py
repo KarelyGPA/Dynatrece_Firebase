@@ -21,22 +21,17 @@ import pygetwindow as gw
 from pywinauto import Application
 from datetime import datetime,timedelta
 import calendar
- 
-#from twilio.rest import Client
+import pyautogui
+import random
+
+from variable import DASHBOARD_URL, FIREBASE_URL
 # -------------------------------
 # CONFIGURATION
 # -------------------------------
  
 # Configurar la ruta de Tesseract si es necesario
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
- 
-DYNATRACE_URL = "https://cdyn.mbcp.mx/login"
-FIREBASE_URL = "https://console.firebase.google.com/project/nvabexdev/analytics/app/android:mx.com.miapp/streamview/realtime~2Foverview%3Ffpn%3D872695562182?hl=es-419"
-DASHBOARD_URL = "https://cdyn.mbcp.mx/e/8a8f01fe-2cd3-4ce5-8ad8-93a523c5a539/#dashboard;gtf=-2h;gf=all;id=9e92fb5d-2f80-4be7-86dc-b0f001b4eb2f"
-SCREENSHOT_PATH_1 = "dynatrace_dashboard.png"
-SCREENSHOT_PATH_2 = "firebase_dashboard.png"
-COOKIE_FILE = "session_cookies.pkl"
- 
+
 MM_path=""
 counter = 0
 # Grupo de WhatsApp
@@ -809,10 +804,6 @@ def es_dia_excepcion():
     excepcion_por_ultimo = es_ultimo_lunes_martes and (es_ultimo_o_penultimo or es_primero)
 
     return excepcion_por_15 or excepcion_por_ultimo
-
-
-import pyautogui
-import random
 
 def programar_ejecucion():
     ultima_configuracion = None
