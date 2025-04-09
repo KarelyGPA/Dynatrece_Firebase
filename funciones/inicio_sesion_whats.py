@@ -6,9 +6,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 WHATSAPP_URL = "https://web.whatsapp.com/"
 
-
-
-
 # URL de WhatsApp Web
 
 def check_whatsapp_login(driver):

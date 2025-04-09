@@ -2,11 +2,13 @@ import pickle
 import time
 import os
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from coneccion_googleDebug import coneccion_google
 from v8_MonitoreoDynatraceFireBase import COOKIE_FILE, DYNATRACE_URL
 from variable import DASHBOARD_URL, PASSWORD, USERNAME
 # -------------------------------
@@ -14,81 +16,48 @@ from variable import DASHBOARD_URL, PASSWORD, USERNAME
 # -------------------------------
 
 def ensure_logged_in():
-    """Verifica si la sesión está activa, si no lo está, realiza login automáticamente."""
     
-    def login(driver):
-        """Realiza el login y guarda las cookies."""
-        print("\nIniciando sesión en Dynatrace...")
-        driver.get(DYNATRACE_URL)
-        time.sleep(15)  # Esperar a que la página cargue completamente
-        
-        # 2. Ingresar usuario y contraseña con WebDriverWait
-        try:
-            # Esperar a que los campos estén visibles
-            user_input = WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.ID, "user"))
-            )
-            pass_input = WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.ID, "password"))
-            )
-            
-            # Ingresar los datos
-            user_input.send_keys(USERNAME)
-            pass_input.send_keys(PASSWORD)
-            pass_input.send_keys(Keys.RETURN)
+    DYNATRACE_URL = "https://cdyn.mbcp.mx/e/8a8f01fe-2cd3-4ce5-8ad8-93a523c5a539/#dashboard;id=9e92fb5d-2f80-4be7-86dc-b0f001b4eb2f;gf=all;gtf=-2h"
 
-            # Esperar a que se complete el login
-            time.sleep(8)
-            
-            # Guardar cookies después de iniciar sesión
-            pickle.dump(driver.get_cookies(), open(COOKIE_FILE, "wb"))
-            print("Cookies guardadas correctamente.")
-        
-        except Exception as e:
-            print(f"Error en el login: {e}")
+    #URL LOG IN: https://cdyn.mbcp.mx/login
 
-    def load_cookies(driver):
-        """Carga cookies si están disponibles y válidas."""
-        if os.path.exists(COOKIE_FILE):
-            try:
-                driver.get(DASHBOARD_URL)  # Ir al dashboard para verificar si la sesión es válida
-                cookies = pickle.load(open(COOKIE_FILE, "rb"))
-                for cookie in cookies:
-                    driver.add_cookie(cookie)
-                driver.refresh()  # Refrescar para aplicar cookies
-                time.sleep(5)  # Esperar que el refresco termine
-                # Verificar si las cookies son válidas comprobando un elemento específico del dashboard
-                if is_logged_in(driver):
-                    print("Cookies cargadas correctamente, sesión activa.")
-                    return True
-                else:
-                    print("Las cookies no son válidas, realizando login.")
-                    return False
-            except Exception as e:
-                print(f"Error cargando cookies: {e}")
-                return False
-        return False
+    # Configurar conexión al Chrome ya abierto en modo debug
+    options = Options()
+    options.debugger_address = "127.0.0.1:9222"  # Esto se conecta al Chrome abierto en modo debug
+    
+    # Conectarse al navegador
+    driver = webdriver.Chrome(options=options)
 
-    def is_logged_in(driver):
-        """Verifica si el usuario está logueado mediante la existencia de un elemento específico."""
-        try:
-            # Cambia este XPath para verificar algún elemento específico en el dashboard
-            driver.find_element(By.XPATH, "//div[@class='dashboard-identifier']")  # Cambia este XPath a algo específico del dashboard
-            return True
-        except:
-            return False
+    # # Ir a Gmail
+    driver.get(DYNATRACE_URL)
+    time.sleep(5)
+    
+    # # Verificar si ya está logueado
+    # if "https://cdyn.mbcp.mx/e/8a8f01fe-2cd3-4ce5-8ad8-93a523c5a539/#dashboard;id=9e92fb5d-2f80-4be7-86dc-b0f001b4eb2f;gf=all;gtf=-2h" in driver.current_url:
+    #     print("✅ Sesión iniciada en Gmail.")
+    # else:
+    #     print("⚠️ Sesión NO iniciada.")
+    
+    try:
+        # Intentar encontrar el primer elemento
+        user = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.NAME, "user"))
+        )
+        user.click()
+        user.send_keys(USERNAME)
 
-    # Conectar a Chrome en modo debug
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.debugger_address = "127.0.0.1:9222"
-    driver = webdriver.Chrome(options=chrome_options)
-    print("✅ Conectado a Chrome en modo debug")
+    except Exception as e:
+        print(f"⚠ No se encontró el primer elemento y no se escribió user: {e}")
 
-    # Verificar si ya estamos logueados. Si no, realiza el login
-    if not load_cookies(driver):  # Si no se cargaron las cookies correctamente o no están disponibles
-        login(driver)  # Realiza el login
+    try:
+        pswd= WebDriverWait(driver, 20).until(
+            #EC.presence_of_element_located((By.XPATH, "//div[@]class='whsOnd zHQkBf']"))
+            EC.presence_of_element_located((By.NAME, "pass"))
+        )
+        pswd.click()
+        pswd.send_keys(PASSWORD)
+        pswd.send_keys(Keys.ENTER)
+    except Exception as e:
+        print(f"⚠ Error al encontrar el elemento: {e}")
 
-    return driver  # Devuelve el driver listo para continuar con la automatización
-
-# Uso de la función
-driver = ensure_logged_in()  # Llama a la función para asegurarte de que la sesión esté iniciada
+#ensure_logged_in()
