@@ -533,28 +533,35 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
     f"Usuarios en los últimos 30 minutos *{str(metricasfb[1])}*",
     f"Apicast bex promedio 3- *{str(valores[0])}* 4- *{str(valores[2])}*"
 ]
-    driver.get("https://chat.google.com/")
- 
-    wait = WebDriverWait(driver, 20)
- 
-    try:
+    
+    chat_abierto= True
+
+    while chat_abierto == True:
+        driver.get("https://chat.google.com/")
+        wait = WebDriverWait(driver, 20)
+        
         # Buscar y seleccionar destinatario
- 
+
         search_box = wait.until(EC.element_to_be_clickable((By.XPATH, '//input[@aria-label="Buscar en el chat"]')))
- 
+
         search_box.send_keys(destinatario)
- 
+
         time.sleep(2)
- 
+
         recipient = wait.until(EC.element_to_be_clickable((By.XPATH, f'//span[contains(text(), "{destinatario}")]')))
- 
+
         recipient.click()
- 
+
         print(f"✅ Se seleccionó el chat de: {destinatario}")
- 
-        time.sleep(5)
- 
-        # Esperar a que aparezca el iframe y cambiar a él (si es necesario)
+
+        time.sleep(6)
+
+        if EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'editable')]")):
+            chat_abierto = False 
+        else:
+            chat_abierto = chat_abierto
+        
+    # Esperar a que aparezca el iframe y cambiar a él (si es necesario)
  
         try:
  
@@ -618,9 +625,6 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
                 time.sleep(5)
             except Exception as img_error:
                 print(f"❌ Error al adjuntar la imagen '{img_path}': {img_error}")
- 
-    except Exception as e:
-        print(f"❌ Error en el proceso: {e}")
    
  
     #------------------------------#
