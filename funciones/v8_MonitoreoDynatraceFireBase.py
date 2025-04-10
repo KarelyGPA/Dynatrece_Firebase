@@ -415,7 +415,7 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
     metrica_OCP3=float(valores[2])
     metrica_OCP4=float(valores[0])
  
-    if metrica_OCP3 > 55 and metrica_OCP4 > 55:
+    if metrica_OCP3 > 200 and metrica_OCP4 > 200:
         #Mensaje de alerta
         message_alert = (
         "*ALERTA*, métricas OCP3 y OCP4 arriba de 200:" + "*\n" + "*OCP3* = " + "*" + str(valores[2]) + "*\n" + "*OCP4* = *" + str(valores[0]) + "*"
@@ -426,11 +426,11 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
         for valor in valores:
            
             counter=counter+1
-            if counter == 1 and metrica_OCP4 > 55:
+            if counter == 1 and metrica_OCP4 > 200:
                 img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp4_grafica.png"
                 Metrica_Alerta = "OCP4"
                 valorr= valores[0]
-            elif counter == 3 and metrica_OCP3 > 55:
+            elif counter == 3 and metrica_OCP3 > 200:
                 img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp3_grafica.png"
                 Metrica_Alerta = "OCP3"
                 valorr= valores[2]
@@ -449,7 +449,7 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
         message_alert = "*ALERTA*, métrica *" + str(Metrica_Alerta) + "* arriba de 200:\n*" + str(Metrica_Alerta) + "* = *" + str(valor_i) + "*"
         
  
-    if metrica_OCP3 > 55 or metrica_OCP4 > 55:
+    if metrica_OCP3 > 200 or metrica_OCP4 > 200:
         try:
             attach_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[@data-tab='10']"))
@@ -630,7 +630,7 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
     metrica_OCP3=float(valores[2])
     metrica_OCP4=float(valores[0])
  
-    if metrica_OCP3 > 55 and metrica_OCP4 > 55:
+    if metrica_OCP3 > 200 and metrica_OCP4 > 200:
         #Mensaje de alerta
             message_alert_google= [
         f"*ALERTA*, métricas OCP3 Y OCP4 arriba de 200:",
@@ -643,11 +643,11 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
         for _ in valores:
            
             counter=counter+1
-            if counter == 1 and metrica_OCP4 > 55:
+            if counter == 1 and metrica_OCP4 > 200:
                 img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp4_grafica.png"
                 Metrica_Alerta = "OCP4"
                 valorr= valores[0]
-            elif counter == 3 and metrica_OCP3 > 55:
+            elif counter == 3 and metrica_OCP3 > 200:
                 img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp3_grafica.png"
                 Metrica_Alerta = "OCP3"
                 valorr= valores[2]
@@ -670,7 +670,7 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
         #---------------------------
         #   Enviar mensaje de alerta por Google
  
-    if  metrica_OCP3 > 55 or metrica_OCP4 > 55:
+    if  metrica_OCP3 > 200 or metrica_OCP4 > 200:
  
         try:
             # Hacer clic en el botón de adjuntar archivo
