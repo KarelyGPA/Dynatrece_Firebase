@@ -98,26 +98,32 @@ def inicio_firebase():
 
         # Espera o interactúa en WhatsApp
         codigo = ""
-        codigo = envio_codigoV(driver,codigo)
-        time.sleep(5)
+        while True:
+            codigo = envio_codigoV(driver,codigo)
+            time.sleep(5)
 
-        # Cierra la pestaña de WhatsApp
-        driver.close()
+            # Cierra la pestaña de WhatsApp
+            driver.close()
 
-        # Regresa a la pestaña de Firebase
-        driver.switch_to.window(ventanaFirebase)
-        print("🔁 De vuelta en Firebase")
+            # Regresa a la pestaña de Firebase
+            driver.switch_to.window(ventanaFirebase)
+            print("🔁 De vuelta en Firebase")
 
-        try:
-            mfa_input = WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.ID, "totpPin"))
-            )
-            mfa_input.click()
-            time.sleep(6)
-            mfa_input.send_keys(codigo)
-            mfa_input.send_keys(Keys.ENTER)
-        except Exception as e:
-            print(f"⚠ Error al encontrar el elemento: {e}")
+            try:
+                mfa_input = WebDriverWait(driver, 20).until(
+                    EC.presence_of_element_located((By.ID, "totpPin"))
+                )
+                mfa_input.click()
+                time.sleep(6)
+                mfa_input.send_keys(codigo)
+                mfa_input.send_keys(Keys.ENTER)    
+
+                time.sleep(2)
+            except Exception as e:
+                print(f"⚠ Error al encontrar el elemento: {e}")
+            
+            if "https://console.firebase.google.com/project/nvabexdev/analytics/" in driver.current_url:
+                break
 
 
-        
+            

@@ -29,7 +29,7 @@ def envio_codigoV(driver,codigo):
 
     # Esperar y capturar código
     codigo = None
-    timeout = time.time() + 300  # 5 minutos
+    timeout = time.time() + 300  # 5 minutos    puede ser mas?
     while time.time() < timeout:
         try:
             # Buscar los últimos mensajes, incluyendo el código
