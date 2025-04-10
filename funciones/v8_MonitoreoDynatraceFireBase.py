@@ -319,27 +319,7 @@ def obtener_datos(url):
         print(f"⚠ Error al obtener los datos: {e}")
 # -------------------------------
 # FUNCIÓN: Enviar a WhatsApp
-# -------------------------------
-# def send_to_whatsapp(img_path, message, group_name):  
-#     message = "Usuarios en el último minuto\u000AUsuarios en los últimos 5 minutos"
- 
-   
-#     driver.get("https://web.whatsapp.com")
- 
-#     time.sleep(10)
-#     try:
-#         search_box = WebDriverWait(driver, 20).until(
-#             EC.presence_of_element_located((By.XPATH, "//div[@aria-label='Search input textbox']"))
-#         )
-#         search_box.click()
-#         search_box.send_keys(group_name)
-#         time.sleep(2)
-#         search_box.send_keys(Keys.ENTER)
-#         time.sleep(2)
-#     except Exception as e:
-#         print(f"⚠ Error al encontrar el grupo '{group_name}': {e}")
-#         return
-   
+# -------------------------------  
     # Adjuntar y enviar imágen
 def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):  
     #message = "Usuarios en el último minuto" + "*",text,"*" + "\nUsuarios en los últimos 5 minutos" + "*",metricasfb[0],"*" + "\nUsuarios en los últimos 30 minuto" + "*",metricasfb[1],"*" +  "\nApicast bex promedio 3-" + "*", valores[0], "*" +  "4- " + "*", valores[2],"*"
@@ -348,8 +328,7 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
     "Usuarios en los últimos 5 minutos *" + str(metricasfb[0]) + "*\n"
     "Usuarios en los últimos 30 minutos *" + str(metricasfb[1]) + "*\n"
     "Apicast bex promedio 3- *" + str(valores[2]) + "* 4- *" + str(valores[0]) + "*"
-        )
-   
+    )
     driver.get("https://web.whatsapp.com")
     time.sleep(10)
    
@@ -414,145 +393,103 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
    
     metrica_OCP3=float(valores[2])
     metrica_OCP4=float(valores[0])
- 
-    if metrica_OCP3 > 200 and metrica_OCP4 > 200:
-        #Mensaje de alerta
-        message_alert = (
-        "*ALERTA*, métricas OCP3 y OCP4 arriba de 200:" + "*\n" + "*OCP3* = " + "*" + str(valores[2]) + "*\n" + "*OCP4* = *" + str(valores[0]) + "*"
-        )
- 
-    else:
-        counter=0
-        for valor in valores:
-           
-            counter=counter+1
-            if counter == 1 and metrica_OCP4 > 200:
-                img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp4_grafica.png"
-                Metrica_Alerta = "OCP4"
-                valorr= valores[0]
-            elif counter == 3 and metrica_OCP3 > 200:
-                img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp3_grafica.png"
-                Metrica_Alerta = "OCP3"
-                valorr= valores[2]
-            else: continue
- 
-            try:
-                valor_f = float(valorr)
-                valor_i = int(valor_f)
-                print("pasó por valor i: ", valor_i)
-            except ValueError:
-                print(f" Error al convertir '{valorr}' a número")
-                continue
- 
+    if metrica_OCP3 > 200 or metrica_OCP4 >200:
+        if metrica_OCP3 > 200 and metrica_OCP4 > 200:
             #Mensaje de alerta
-
-        message_alert = "*ALERTA*, métrica *" + str(Metrica_Alerta) + "* arriba de 200:\n*" + str(Metrica_Alerta) + "* = *" + str(valor_i) + "*"
-        
- 
-    if metrica_OCP3 > 200 or metrica_OCP4 > 200:
-        try:
-            attach_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[@data-tab='10']"))
+            message_alert = (
+            "*ALERTA*, métricas OCP3 y OCP4 arriba de 200:" + "*\n" + "*OCP3* = " + "*" + str(valores[2]) + "*\n" + "*OCP4* = *" + str(valores[0]) + "*"
             )
-            attach_button.click()
+        else:
+            counter=0
+            for valor in valores: 
+                counter=counter+1
+                if counter == 1 and metrica_OCP4 > 200:
+                    img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp4_grafica.png"
+                    Metrica_Alerta = "OCP4"
+                    valorr= valores[0]
+                elif counter == 3 and metrica_OCP3 > 200:
+                    img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp3_grafica.png"
+                    Metrica_Alerta = "OCP3"
+                    valorr= valores[2]
+                else: continue
+                try:
+                    valor_f = float(valorr)
+                    valor_i = int(valor_f)
+                    print("pasó por valor i: ", valor_i)
+                except ValueError:
+                    print(f" Error al convertir '{valorr}' a número")
+                    continue
+                #Mensaje de alerta
+            message_alert = "*ALERTA*, métrica *" + str(Metrica_Alerta) + "* arriba de 200:\n*" + str(Metrica_Alerta) + "* = *" + str(valor_i) + "*"
+        if metrica_OCP3 > 200 or metrica_OCP4 > 200:
+            try:
+                attach_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[@data-tab='10']"))
+                )
+                attach_button.click()
+                time.sleep(2)
+            
+                image_input = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, "//span[text()='Photos & videos']/following-sibling::input[@type='file']"))
+                )
+                image_input.send_keys(os.path.abspath(r"C:\Users\palma.a.guadalupe\Desktop\capturas3\MM.png"))
+                time.sleep(5)
+            
+                send_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
+                )
+                send_button.click()
+                time.sleep(2)
+            except Exception as e:
+                    print(f"⚠ Error al adjuntar imagen {MM_path}")
+            # Enviar el mensaje usando 'Shift + Enter' para saltos de línea
             time.sleep(2)
-           
-            image_input = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//span[text()='Photos & videos']/following-sibling::input[@type='file']"))
-            )
-            image_input.send_keys(os.path.abspath(r"C:\Users\palma.a.guadalupe\Desktop\capturas3\MM.png"))
-            time.sleep(5)
-           
-            send_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
-            )
-            send_button.click()
-            time.sleep(2)
-        except Exception as e:
-                print(f"⚠ Error al adjuntar imagen {MM_path}")
-        # Enviar el mensaje usando 'Shift + Enter' para saltos de línea
-        time.sleep(2)
-        try:
-            text_box = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//div[@role='textbox' and @aria-label='Type a message']"))
-            )
-            text_box.click()
-            time.sleep(2)
-   
-            # Para forzar el salto de línea, reemplazamos '\n' con Keys.SHIFT + Keys.ENTER
-            for line in message_alert.split("\n"):
-                text_box.send_keys(line)  # Enviar una línea
-                text_box.send_keys(Keys.SHIFT + Keys.ENTER)  # Salto de línea
-            text_box.send_keys(Keys.RETURN)  # Finalmente, enviar el mensaje
-            time.sleep(2)
-   
-            send_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
-            )
-            send_button.click()
-            time.sleep(2)
-        # try:
-        #     text_box = WebDriverWait(driver, 10).until(
-        #         EC.presence_of_element_located((By.XPATH, "//div[@role='textbox' and @aria-label='Type a message']"))
-        #     )
-        #     text_box.click()
-        #     time.sleep(1)
-   
-        #     # Para forzar el salto de línea, reemplazamos '\n' con Keys.SHIFT + Keys.ENTER
-        #     for line in message_alert.split("\n"):
-        #         text_box.send_keys(line)  # Enviar una línea
-        #         text_box.send_keys(Keys.SHIFT + Keys.ENTER)  # Salto de línea
-        #     text_box.send_keys(Keys.RETURN)  # Finalmente, enviar el mensaje
-        #     time.sleep(1)
-   
-        #     send_button = WebDriverWait(driver, 10).until(
-        #         EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
-        #     )
-        #     send_button.click()
-        #     time.sleep(2)
-           
-        except Exception as e: print("fallo el try de mandar el mensaje")
+            try:
+                text_box = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[@role='textbox' and @aria-label='Type a message']"))
+                )
+                text_box.click()
+                time.sleep(2)
+    
+                # Para forzar el salto de línea, reemplazamos '\n' con Keys.SHIFT + Keys.ENTER
+                for line in message_alert.split("\n"):
+                    text_box.send_keys(line)  # Enviar una línea
+                    text_box.send_keys(Keys.SHIFT + Keys.ENTER)  # Salto de línea
+                text_box.send_keys(Keys.RETURN)  # Finalmente, enviar el mensaje
+                time.sleep(2)
+    
+                send_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
+                )
+                send_button.click()
+                time.sleep(2)  
+            except Exception as e: print("fallo el try de mandar el mensaje")
+        else:
+            print("no es mayor a 40 según")  
     else:
-        print("no es mayor a 40 según")    
-       
- 
+        pass  
 # -------------------------------
- 
 # FUNCTION: Send to Google Chat
- 
 # -------------------------------
- 
 def send_message_to_google_chat(driver, destinatario, message, img_path, valores, metricasfb, text):
- 
     message= [
     f"Usuarios en el último minuto *{str(text)}*",
     f"Usuarios en los últimos 5 minutos *{str(metricasfb[0])}*",
     f"Usuarios en los últimos 30 minutos *{str(metricasfb[1])}*",
     f"Apicast bex promedio 3- *{str(valores[2])}* 4- *{str(valores[0])}*"
 ]
-    
     chat_abierto= True
-
     while chat_abierto == True:
         driver.get("https://chat.google.com/")
-        wait = WebDriverWait(driver, 20)
-        
+        wait = WebDriverWait(driver, 20) 
         # Buscar y seleccionar destinatario
-
         search_box = wait.until(EC.element_to_be_clickable((By.XPATH, '//input[@aria-label="Buscar en el chat"]')))
-
         search_box.send_keys(destinatario)
-
         time.sleep(2)
-
         recipient = wait.until(EC.element_to_be_clickable((By.XPATH, f'//span[contains(text(), "{destinatario}")]')))
-
         recipient.click()
-
         print(f"✅ Se seleccionó el chat de: {destinatario}")
-
         time.sleep(6)
-
         if EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'editable')]")):
             chat_abierto = False 
         else:
@@ -629,93 +566,95 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
    
     metrica_OCP3=float(valores[2])
     metrica_OCP4=float(valores[0])
- 
-    if metrica_OCP3 > 200 and metrica_OCP4 > 200:
-        #Mensaje de alerta
-            message_alert_google= [
-        f"*ALERTA*, métricas OCP3 Y OCP4 arriba de 200:",
-        f"*OCP3* = *{str(valores[2])}*",
-        f"*OCP4* = *{str(valores[0])}*"
-        ]
- 
-    else:
-        counter=0
-        for _ in valores:
-           
-            counter=counter+1
-            if counter == 1 and metrica_OCP4 > 200:
-                img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp4_grafica.png"
-                Metrica_Alerta = "OCP4"
-                valorr= valores[0]
-            elif counter == 3 and metrica_OCP3 > 200:
-                img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp3_grafica.png"
-                Metrica_Alerta = "OCP3"
-                valorr= valores[2]
-            else: continue
- 
-            try:
-                valor_f = float(valorr)
-                valor_i = int(valor_f)
-                print("pasó por valor i: ", valor_i)
-            except ValueError:
-                print(f" Error al convertir '{valorr}' a número")
-                continue
- 
+    if metrica_OCP3 > 200 or metrica_OCP4 > 200:
+        if metrica_OCP3 > 200 and metrica_OCP4 > 200:
             #Mensaje de alerta
-            message_alert_google= [
-        f"*ALERTA*, métrica {str(Metrica_Alerta)} arriba de 200:",
-        f"*{str(Metrica_Alerta)}* = *{str(valor_i)}*"
-    ]
-       
-        #---------------------------
-        #   Enviar mensaje de alerta por Google
- 
-    if  metrica_OCP3 > 200 or metrica_OCP4 > 200:
- 
-        try:
-            # Hacer clic en el botón de adjuntar archivo
-            attach_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@aria-label="Subir archivo"]')))
-            driver.execute_script("arguments[0].click();", attach_button)
-            time.sleep(3)
-            # Esperar input de archivo y subir la imagen
-            file_input = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@type="file"]')))
-            file_input.send_keys(os.path.abspath(r"C:\Users\palma.a.guadalupe\Desktop\capturas3\MM.png"))
-            print(f"📂 Imagen '{r"C:\Users\palma.a.guadalupe\Desktop\capturas3\MM.png"}' seleccionada para enviar.")
-            time.sleep(5)  # Esperar subida
-            # 🔹 Cerrar ventana de explorador de archivos
-            pyautogui.press("esc")  # Intentar con ESC
-            time.sleep(1)
-            print("❎ Intentando cerrar ventana de explorador de archivos.")
-            # Enviar la imagen
-            send_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Enviar mensaje']")))
-            driver.execute_script("arguments[0].click();", send_button)
-            print(f"✅ Imagen enviada: {MM_path}")
-            time.sleep(5)
- 
-        except Exception as e:
-            print(f"❌ Error en el proceso: {e}")
-   
- 
-        # Buscar el campo de mensaje
-        mensaje_box = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'editable')]")))
- 
-        #mensaje_box.send_keys(message)
-        for linea in message_alert_google:
-            driver.execute_script("""
-        // Crea un nuevo div
-        var div = document.createElement('div');
-        // Agrega el texto al div
-        var textNode = document.createTextNode(arguments[0]);
-        div.appendChild(textNode);
-        // Crea un salto de línea
-        var br = document.createElement('br');
-        div.appendChild(br);
-        // Agrega el div al elemento padre
-        arguments[1].appendChild(div);
-    """, linea, mensaje_box)
- 
-        #driver.execute_script("arguments[0].innerHTML = arguments[1];", mensaje_box, message)
- 
-        mensaje_box.send_keys(Keys.RETURN)
- 
-        time.sleep(2)
+                message_alert_google= [
+            f"*ALERTA*, métricas OCP3 Y OCP4 arriba de 200:",
+            f"*OCP3* = *{str(valores[2])}*",
+            f"*OCP4* = *{str(valores[0])}*"
+            ]
+    
+        else:
+            counter=0
+            for _ in valores:
+            
+                counter=counter+1
+                if counter == 1 and metrica_OCP4 > 200:
+                    img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp4_grafica.png"
+                    Metrica_Alerta = "OCP4"
+                    valorr= valores[0]
+                elif counter == 3 and metrica_OCP3 > 200:
+                    img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp3_grafica.png"
+                    Metrica_Alerta = "OCP3"
+                    valorr= valores[2]
+                else: continue
+    
+                try:
+                    valor_f = float(valorr)
+                    valor_i = int(valor_f)
+                    print("pasó por valor i: ", valor_i)
+                except ValueError:
+                    print(f" Error al convertir '{valorr}' a número")
+                    continue
+    
+                #Mensaje de alerta
+                message_alert_google= [
+            f"*ALERTA*, métrica {str(Metrica_Alerta)} arriba de 200:",
+            f"*{str(Metrica_Alerta)}* = *{str(valor_i)}*"
+        ]
+        
+            #---------------------------
+            #   Enviar mensaje de alerta por Google
+    
+        if  metrica_OCP3 > 200 or metrica_OCP4 > 200:
+    
+            try:
+                # Hacer clic en el botón de adjuntar archivo
+                attach_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@aria-label="Subir archivo"]')))
+                driver.execute_script("arguments[0].click();", attach_button)
+                time.sleep(3)
+                # Esperar input de archivo y subir la imagen
+                file_input = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@type="file"]')))
+                file_input.send_keys(os.path.abspath(r"C:\Users\palma.a.guadalupe\Desktop\capturas3\MM.png"))
+                print(f"📂 Imagen '{r"C:\Users\palma.a.guadalupe\Desktop\capturas3\MM.png"}' seleccionada para enviar.")
+                time.sleep(5)  # Esperar subida
+                # 🔹 Cerrar ventana de explorador de archivos
+                pyautogui.press("esc")  # Intentar con ESC
+                time.sleep(1)
+                print("❎ Intentando cerrar ventana de explorador de archivos.")
+                # Enviar la imagen
+                send_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Enviar mensaje']")))
+                driver.execute_script("arguments[0].click();", send_button)
+                print(f"✅ Imagen enviada: {MM_path}")
+                time.sleep(5)
+    
+            except Exception as e:
+                print(f"❌ Error en el proceso: {e}")
+    
+    
+            # Buscar el campo de mensaje
+            mensaje_box = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'editable')]")))
+    
+            #mensaje_box.send_keys(message)
+            for linea in message_alert_google:
+                driver.execute_script("""
+            // Crea un nuevo div
+            var div = document.createElement('div');
+            // Agrega el texto al div
+            var textNode = document.createTextNode(arguments[0]);
+            div.appendChild(textNode);
+            // Crea un salto de línea
+            var br = document.createElement('br');
+            div.appendChild(br);
+            // Agrega el div al elemento padre
+            arguments[1].appendChild(div);
+        """, linea, mensaje_box)
+    
+            #driver.execute_script("arguments[0].innerHTML = arguments[1];", mensaje_box, message)
+    
+            mensaje_box.send_keys(Keys.RETURN)
+    
+            time.sleep(2)
+    else:
+        pass

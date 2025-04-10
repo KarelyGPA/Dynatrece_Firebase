@@ -15,11 +15,9 @@ from v8_MonitoreoDynatraceFireBase import (
     activate_chrome, capture_screen_area, extract_text_from_image, join_img,
     metricas, metricasF, metricasMM, send_message_to_google_chat, send_to_whatsapp
 )
-
 # -------------------------------
 # FUNCIONES DE SOPORTE
 # -------------------------------
-
 def abrir_chrome_debug():
     chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
     debug_profile_path = r"C:\chrome_debug"
@@ -34,7 +32,6 @@ def abrir_chrome_debug():
     ])
     print("🟢 Chrome abierto en modo debug.")
     time.sleep(5)
-
 # -------------------------------
 # FUNCIÓN PRINCIPAL
 # -------------------------------
