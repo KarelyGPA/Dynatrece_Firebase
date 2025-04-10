@@ -24,64 +24,67 @@ driver = webdriver.Chrome(options=chrome_options)
 print("✅ Conectado a Chrome en modo debug")
 
 def main():
-
-    print("\n🚀 Iniciando proceso de inicios de sesion...")  
-    activate_chrome()
-
-    ensure_logged_in()
-    inicio_firebase()
-    print("\n🚀 Iniciando proceso de capturas y envios ...")  
-    try:
-        valores = metricas(driver)
-    except Exception as e:
-        print(f"⚠️ Error al extraer métricas de Dynatrace: {e}")
-        print("\n✅ Proceso finalizado con éxito.")
-    
-    if not os.path.exists(SAVE_FOLDER):
-        os.makedirs(SAVE_FOLDER)
-        print(f"📂 Carpeta creada: {SAVE_FOLDER}")
-
-    captured_images = []
-    extracted_texts = {}
-    extracted_texts_firebase = {}
-
-    for (x, y, width, height, file_name) in AREAS_TO_CAPTURE:
+    while True:
         try:
-            image_path = capture_screen_area(x, y, width, height, file_name)
-            captured_images.append(image_path)
+            print("\n🚀 Iniciando proceso de inicios de sesion...")  
+            activate_chrome()
+            ensure_logged_in()
+            inicio_firebase()
+
+            print("\n🚀 Iniciando proceso de capturas y envios ...")  
+            try:
+                valores = metricas(driver)
+            except Exception as e:
+                print(f"⚠️ Error al extraer métricas de Dynatrace: {e}")
+                return  # Si esta métrica es crítica, termina aquí
+
+            if not os.path.exists(SAVE_FOLDER):
+                os.makedirs(SAVE_FOLDER)
+                print(f"📂 Carpeta creada: {SAVE_FOLDER}")
+
+            captured_images = []
+            extracted_texts = {}
+            extracted_texts_firebase = {}
+
+            for (x, y, width, height, file_name) in AREAS_TO_CAPTURE:
+                try:
+                    image_path = capture_screen_area(x, y, width, height, file_name)
+                    captured_images.append(image_path)
+                except Exception as e:
+                    print(f"❌ Error al capturar {file_name}: {e}")  
+
+            metricasMM(MM_path)
+            metricasfb = metricasF(driver)
+
+            pyautogui.moveTo(807, 843, duration=0.5)
+
+            for (x, y, width, height, file_name) in AREAS_TO_CAPTURE_Firebase:
+                try:
+                    img_path = capture_screen_area(x, y, width, height, file_name)
+                    captured_images.append(img_path)
+                    if "metrica" in file_name:
+                        text = extract_text_from_image(img_path)
+                        extracted_texts_firebase[file_name] = text
+                except Exception as e:
+                    print(f"❌ Error al capturar {file_name}: {e}")
+
+            join_img(img_path)
+
+            message = (
+                "Usuarios en el último minuto *" + str(text) + "*\n"
+                "Usuarios en los últimos 5 minutos *" + str(metricasfb[0]) + "*\n"
+                "Usuarios en los últimos 30 minutos *" + str(metricasfb[1]) + "*\n"
+                "Apicast bex promedio 3- *" + str(valores[0]) + "* 4- *" + str(valores[2]) + "*"
+            )
+
+            send_to_whatsapp(img_path, message, GROUP_NAME, valores, metricasfb, text)
+            send_message_to_google_chat(driver, "SRE", message, img_path, valores, metricasfb, text)
+
+            break  # Si todo sale bien, se rompe el while y no se repite
         except Exception as e:
-            print(f"❌ Error al capturar {file_name}: {e}")  
-
-    metricasMM(MM_path)
-
-    metricasfb = metricasF(driver)
-
-    pyautogui.moveTo(807, 843, duration=0.5)
-
-    for (x, y, width, height, file_name) in AREAS_TO_CAPTURE_Firebase:
-        try:
-            img_path = capture_screen_area(x, y, width, height, file_name)
-            captured_images.append(img_path)
-            if "metrica" in file_name:
-                text = extract_text_from_image(img_path)
-                extracted_texts_firebase[file_name] = text
-        except Exception as e:
-            print(f"❌ Error al capturar {file_name}: {e}")
-
-    join_img(img_path)
-
-    message = (
-        "Usuarios en el último minuto *" + str(text) + "*\n"
-        "Usuarios en los últimos 5 minutos *" + str(metricasfb[0]) + "*\n"
-        "Usuarios en los últimos 30 minutos *" + str(metricasfb[1]) + "*\n"
-        "Apicast bex promedio 3- *" + str(valores[0]) + "* 4- *" + str(valores[2]) + "*"
-    )
-
-    send_to_whatsapp(img_path, message , GROUP_NAME, valores, metricasfb, text)
-
-    image_paths = [SAVE_FOLDER]
-    destinatario = "SRE"
-    send_message_to_google_chat(driver, destinatario, message, img_path, valores, metricasfb, text)
+            print(f"\n🔁 Error general en main(): {e}")
+            print("🔄 Reintentando en 10 segundos...\n")
+            time.sleep(10)
 
 # -------------------------------
 # FUNCIÓN PARA PROGRAMAR LA EJECUCIÓN

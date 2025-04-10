@@ -346,7 +346,7 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
     "Usuarios activos en el último minuto *" + str(text) + "*\n"
     "Usuarios en los últimos 5 minutos *" + str(metricasfb[0]) + "*\n"
     "Usuarios en los últimos 30 minutos *" + str(metricasfb[1]) + "*\n"
-    "Apicast bex promedio 3- *" + str(valores[0]) + "* 4- *" + str(valores[2]) + "*"
+    "Apicast bex promedio 3- *" + str(valores[2]) + "* 4- *" + str(valores[0]) + "*"
         )
    
     driver.get("https://web.whatsapp.com")
@@ -444,13 +444,9 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
                 continue
  
             #Mensaje de alerta
-        message_alert = (
-        "*ALERTA*, métrica  arriba de 200:" + "*\n" + "*OCP3* = " + "*" + str(valores[2]) + "*\n" + "*OCP4* = *" + str(valores[0]) + "*"
-        )
 
-        message_alert = (
-        "*ALERTA*, métrica *"+ {str(Metrica_Alerta)} + "* arriba de 200: " +"*\n" + "*" +{str(Metrica_Alerta)} +"* = *" + {str(valor_i)} + "*"
-        )
+        message_alert = "*ALERTA*, métrica *" + str(Metrica_Alerta) + "* arriba de 200:\n*" + str(Metrica_Alerta) + "* = *" + str(valor_i) + "*"
+        
  
     if metrica_OCP3 > 55 or metrica_OCP4 > 55:
         try:
@@ -531,7 +527,7 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
     f"Usuarios en el último minuto *{str(text)}*",
     f"Usuarios en los últimos 5 minutos *{str(metricasfb[0])}*",
     f"Usuarios en los últimos 30 minutos *{str(metricasfb[1])}*",
-    f"Apicast bex promedio 3- *{str(valores[0])}* 4- *{str(valores[2])}*"
+    f"Apicast bex promedio 3- *{str(valores[2])}* 4- *{str(valores[0])}*"
 ]
     
     chat_abierto= True
