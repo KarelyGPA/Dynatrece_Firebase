@@ -94,7 +94,7 @@ def main():
                     print(f"❌ Error al capturar {file_name}: {e}")
 
             join_img(img_path)
-            text = extracted_texts_firebase.get("metrica.png", "N/A")
+            text = extracted_texts_firebase.get("metrica.png", text)
 
             message = (
                 "Usuarios en el último minuto *" + str(text) + "*\n"

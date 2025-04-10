@@ -38,7 +38,7 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 MM_path=""
 counter = 0
 # Grupo de WhatsApp
-GROUP_NAME = "Hechiceros"  #  Nombre exacto del grupo  "C:\Users\palma.a.guadalupe\Desktop\capturas3"
+GROUP_NAME = "Bot"  #  Nombre exacto del grupo  "C:\Users\palma.a.guadalupe\Desktop\capturas3"
  
 img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\dashboards.png"
 #SCREENSHOT_PATH_1 = r"C:\Users\b.natali\Downloads\capturas"
@@ -175,6 +175,7 @@ def extract_text_from_image(img_path):
         gray = cv2.cvtColor(image_cv, cv2.COLOR_BGR2GRAY)  # Convertir a escala de grises
         _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)  # Mejorar contraste
         text = pytesseract.image_to_string(thresh, lang="eng")  # Extraer texto
+        print(text)
         return text.strip()  # Eliminar espacios innecesarios
     except Exception as e:
         print(f"⚠️ Error al extraer texto de {img_path}: {e}")
