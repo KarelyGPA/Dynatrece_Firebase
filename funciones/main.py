@@ -94,9 +94,9 @@ def main():
             text = extracted_texts_firebase.get("metrica.png", text)
 
             message = (
-                "Usuarios en el último minuto *" + str(text) + "*\n"
-                "Usuarios en los últimos 5 minutos *" + str(metricasfb[0]) + "*\n"
-                "Usuarios en los últimos 30 minutos *" + str(metricasfb[1]) + "*\n"
+               # "Usuarios en el último minuto *" + str(text) + "*\n"
+                "Usuarios en los últimos 30 minutos *" + str(metricasfb[0]) + "*\n"
+                "Usuarios en los últimos 5 minutos *" + str(metricasfb[1]) + "*\n"
                 "Apicast bex promedio 3- *" + str(valores[0]) + "* 4- *" + str(valores[2]) + "*"
             )
 

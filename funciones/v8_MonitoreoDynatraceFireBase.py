@@ -324,9 +324,9 @@ def obtener_datos(url):
 def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):  
     #message = "Usuarios en el último minuto" + "*",text,"*" + "\nUsuarios en los últimos 5 minutos" + "*",metricasfb[0],"*" + "\nUsuarios en los últimos 30 minuto" + "*",metricasfb[1],"*" +  "\nApicast bex promedio 3-" + "*", valores[0], "*" +  "4- " + "*", valores[2],"*"
     message = (
-    "Usuarios activos en el último minuto *" + str(text) + "*\n"
-    "Usuarios en los últimos 5 minutos *" + str(metricasfb[0]) + "*\n"
-    "Usuarios en los últimos 30 minutos *" + str(metricasfb[1]) + "*\n"
+    #"Usuarios activos en el último minuto *" + str(text) + "*\n"
+    "Usuarios en los últimos 30 minutos *" + str(metricasfb[0]) + "*\n"
+    "Usuarios en los últimos 5 minutos *" + str(metricasfb[1]) + "*\n"
     "Apicast bex promedio 3- *" + str(valores[2]) + "* 4- *" + str(valores[0]) + "*"
     )
     driver.get("https://web.whatsapp.com")
@@ -473,9 +473,9 @@ def send_to_whatsapp(img_path, message, group_name, valores, metricasfb,text):
 # -------------------------------
 def send_message_to_google_chat(driver, destinatario, message, img_path, valores, metricasfb, text):
     message= [
-    f"Usuarios en el último minuto *{str(text)}*",
-    f"Usuarios en los últimos 5 minutos *{str(metricasfb[0])}*",
-    f"Usuarios en los últimos 30 minutos *{str(metricasfb[1])}*",
+    #f"Usuarios en el último minuto *{str(text)}*",
+    f"Usuarios en los últimos 30 minutos *{str(metricasfb[0])}*",
+    f"Usuarios en los últimos 5 minutos *{str(metricasfb[1])}*",
     f"Apicast bex promedio 3- *{str(valores[2])}* 4- *{str(valores[0])}*"
 ]
     chat_abierto= True
@@ -498,19 +498,12 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
     # Esperar a que aparezca el iframe y cambiar a él (si es necesario)
  
         try:
- 
             iframe = wait.until(EC.presence_of_element_located((By.XPATH, "//iframe[@name='single_full_screen']")))
- 
             driver.switch_to.frame(iframe)
- 
         except:
- 
             pass  # Si el iframe no aparece, continuar normalmente
- 
-        # Buscar el campo de mensaje
- 
-        mensaje_box = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'editable')]")))
- 
+        # Buscar el campo de mensaje 
+        mensaje_box = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'editable')]"))) 
         #mensaje_box.send_keys(message)
         for linea in message:
             driver.execute_script("""
@@ -524,16 +517,11 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
         div.appendChild(br);
         // Agrega el div al elemento padre
         arguments[1].appendChild(div);
-    """, linea, mensaje_box)
- 
+    """, linea, mensaje_box) 
         #driver.execute_script("arguments[0].innerHTML = arguments[1];", mensaje_box, message)
- 
         mensaje_box.send_keys(Keys.RETURN)
- 
         time.sleep(2)
- 
         print("✅ Mensaje enviado correctamente.")
- 
         # Enviar imágenes si existen
         if img_path:              
             if not os.path.exists(img_path):
@@ -559,11 +547,8 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
                 time.sleep(5)
             except Exception as img_error:
                 print(f"❌ Error al adjuntar la imagen '{img_path}': {img_error}")
-   
- 
     #------------------------------#
      #SI OCP3 o OCP4 es mayor a 200
-   
     metrica_OCP3=float(valores[2])
     metrica_OCP4=float(valores[0])
     if metrica_OCP3 > 200 or metrica_OCP4 > 200:
@@ -574,11 +559,9 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
             f"*OCP3* = *{str(valores[2])}*",
             f"*OCP4* = *{str(valores[0])}*"
             ]
-    
         else:
             counter=0
             for _ in valores:
-            
                 counter=counter+1
                 if counter == 1 and metrica_OCP4 > 200:
                     img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\ocp4_grafica.png"
@@ -589,7 +572,6 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
                     Metrica_Alerta = "OCP3"
                     valorr= valores[2]
                 else: continue
-    
                 try:
                     valor_f = float(valorr)
                     valor_i = int(valor_f)
@@ -597,7 +579,6 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
                 except ValueError:
                     print(f" Error al convertir '{valorr}' a número")
                     continue
-    
                 #Mensaje de alerta
                 message_alert_google= [
             f"*ALERTA*, métrica {str(Metrica_Alerta)} arriba de 200:",
@@ -631,8 +612,6 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
     
             except Exception as e:
                 print(f"❌ Error en el proceso: {e}")
-    
-    
             # Buscar el campo de mensaje
             mensaje_box = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'editable')]")))
     
@@ -650,11 +629,8 @@ def send_message_to_google_chat(driver, destinatario, message, img_path, valores
             // Agrega el div al elemento padre
             arguments[1].appendChild(div);
         """, linea, mensaje_box)
-    
             #driver.execute_script("arguments[0].innerHTML = arguments[1];", mensaje_box, message)
-    
             mensaje_box.send_keys(Keys.RETURN)
-    
             time.sleep(2)
     else:
         pass
