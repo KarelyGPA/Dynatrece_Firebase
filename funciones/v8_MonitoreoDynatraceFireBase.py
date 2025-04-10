@@ -38,7 +38,7 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 MM_path=""
 counter = 0
 # Grupo de WhatsApp
-GROUP_NAME = "bot"  #  Nombre exacto del grupo  "C:\Users\palma.a.guadalupe\Desktop\capturas3"
+GROUP_NAME = "Hechiceros"  #  Nombre exacto del grupo  "C:\Users\palma.a.guadalupe\Desktop\capturas3"
  
 img_path = r"C:\Users\palma.a.guadalupe\Desktop\capturas3\dashboards.png"
 #SCREENSHOT_PATH_1 = r"C:\Users\b.natali\Downloads\capturas"
